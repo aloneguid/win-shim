@@ -1,5 +1,7 @@
 # win-shim
 
+**<span style="color: red">THIS IS AN EARLY ALPHA!</span>**
+
 Lightweight and customisable shim executable for **Windows**. Shims supposed to work just like target executables they are shadowing.
 
 It's written in safe C++20.
@@ -13,14 +15,19 @@ It's written in safe C++20.
   - [ ] Icon.
   - [ ] Version information.
   - [ ] Exit status (error code).
+- Extras
+  - [ ] Limit registry access.
+  - [ ] Limit filesystem access.
+  - [ ] Limit amount of available RAM.
+  - [ ] Change clock.
 
 ## How to Use
 
-Download the latest release.
+Download the latest release when ready.
 
 ## Building
 
-As this is Windows exclusive, you need Visual Studio 2019 with Windows SDK installed. The main reason for this is `CMake` is considerably harder (but not impossible) to use when you need access to OS specific tools.
+As this is **Windows exclusive**, you need Visual Studio 2019 with Windows SDK installed. The main reason for this is `CMake` is considerably harder (but not impossible) to use when you need access to OS specific tools.
 
 `shmake` (but not shim) has dependency on:
-- `boost::program_options`
+- `boost::program_options`.
