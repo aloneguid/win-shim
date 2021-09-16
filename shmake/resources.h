@@ -10,7 +10,7 @@
 class resources
 {
 public:
-	resources(const std::string& file_path = "");
+	resources(const std::wstring& file_path = L"");
 	~resources();
 
 	std::wstring load_string(UINT id);
@@ -19,10 +19,12 @@ public:
 
 	void replace_string_table(int index, const std::vector<std::wstring>& strings);
 
+	void extract_binary_to_file(int res_id, const std::wstring& path);
+
 	void commit_changes();
 
 private:
-	std::string file_path;
+	std::wstring file_path;
 	HINSTANCE hInstance;
 	bool edit_made;
 	HANDLE hEdit;

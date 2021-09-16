@@ -1,5 +1,4 @@
-#pragma once
-
+#include "util.h"
 #include <string>
 #include "windows.h"
 #include <stdexcept>
@@ -23,10 +22,31 @@ std::string wstr_to_str(const std::wstring& wstr)
 	return strTo;
 }
 
+std::wstring get_win32_last_error()
+{
+	DWORD dw = GetLastError();
+
+	PVOID lpMsgBuf;
+	LPVOID lpDisplayBuf;
+
+	::FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		dw,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf,
+		0, NULL);
+	std::wstring sdw((wchar_t*)lpMsgBuf);
+	::LocalFree(lpMsgBuf);
+	return sdw;
+}
+
 /// <summary>
 ///  Throws runtime_error with win32 error code and human readable message. Intended to be the last thing the program does.
 /// </summary>
-void throw_win32_le(const std::wstring& function_name = L"")
+void throw_win32_le(const std::wstring& action)
 {
 	// https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror
 	DWORD dw = GetLastError();
@@ -51,16 +71,14 @@ void throw_win32_le(const std::wstring& function_name = L"")
 	// make it nice
 
 	std::wostringstream ss;
-	if (!function_name.empty())
+	ss << L"Failed";
+	if (!action.empty())
 	{
-		ss << L"\"" << function_name << "\" failed.";
+		ss << L" to ";
+		ss << action;
 	}
-	else
-	{
-		ss << "Failed.";
-	}
-	ss << " Code: " << dw << ", message: \"" << sdw << "\".";
-	
+	ss << ". Code: " << dw << ", message: \"" << sdw << "\".";
+
 	std::string utf8 = wstr_to_str(ss.str());
 	throw std::runtime_error(utf8);
 }

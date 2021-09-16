@@ -11,6 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shmake", "shmake\shmake.vcxproj", "{46747A48-3002-478F-ACE9-C322462A8BBE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E609977-71B2-41BE-8606-53F10A2E4E90} = {1E609977-71B2-41BE-8606-53F10A2E4E90}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

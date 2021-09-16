@@ -1,12 +1,13 @@
 #include "resources.h"
 #include <iostream>
-#include "util.hpp"
+#include "util.h"
+#include <fstream>
 
 #define MAX_LOADSTRING 1024
 
 using namespace std;
 
-resources::resources(const std::string& file_path)
+resources::resources(const std::wstring& file_path)
 	: file_path { file_path }
 {
 	if (file_path.empty())
@@ -15,7 +16,7 @@ resources::resources(const std::string& file_path)
 	}
 	else
 	{
-		if (!::LoadLibraryExA(file_path.c_str(), NULL, LOAD_LIBRARY_AS_DATAFILE))
+		if (!::LoadLibraryEx(file_path.c_str(), NULL, LOAD_LIBRARY_AS_DATAFILE))
 			throw_win32_le();
 	}
 }
@@ -45,11 +46,11 @@ std::wstring resources::load_string(UINT id)
 
 void resources::copy_main_icon(const resources& source)
 {
-	HICON hSrcIcon = ::ExtractIconA(hInstance, file_path.c_str(), 0);
+	//HICON hSrcIcon = ::ExtractIconA(hInstance, file_path.c_str(), 0);
 
 	//::UpdateResource()
 
-	::DestroyIcon(hSrcIcon);
+	//::DestroyIcon(hSrcIcon);
 }
 
 void resources::replace_string_table(int index, const std::vector<std::wstring>& strings)
@@ -74,11 +75,30 @@ void resources::replace_string_table(int index, const std::vector<std::wstring>&
 	}
 }
 
+void resources::extract_binary_to_file(int res_id, const std::wstring& path)
+{
+	// note that it is not necessary to free/unload any handles here
+
+	HRSRC hResInfo = ::FindResource(hInstance, MAKEINTRESOURCE(res_id), RT_RCDATA);
+	if (!hResInfo) throw_win32_le(L"find shim inside this module");
+
+	HGLOBAL hResData = ::LoadResource(hInstance, hResInfo);
+	if (!hResData) throw_win32_le(L"load shim resource");
+
+	size_t size = ::SizeofResource(hInstance, hResInfo);
+	LPVOID data = ::LockResource(hResData);
+
+	// write it out
+	ofstream f(path, ios::out | ios::binary);
+	f.write((char*)data, size);
+	f.close();
+}
+
 void resources::open_for_edit()
 {
 	if (edit_made) return;
 
-	if (hEdit = ::BeginUpdateResourceA(file_path.c_str(), false))
+	if (hEdit = ::BeginUpdateResource(file_path.c_str(), false))
 	{
 		edit_made = true;
 	}

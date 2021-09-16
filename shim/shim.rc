@@ -26,7 +26,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 STRINGTABLE
 BEGIN
-    IDS_TARGET_CMDLINE      "vi %s"
+    IDS_TARGET_CMDLINE      "notepad.exe %s"
 END
 
 #endif    // Neutral resources
