@@ -56,11 +56,12 @@ int wmain(int argc, wchar_t* argv[])
 
     wcout << L"waiting... ";
 	::WaitForSingleObject(pi.hProcess, INFINITE);
-    wcout << L"done." << endl;
 
     DWORD exit_code = 0;
     // if next line fails, code is still 0
     ::GetExitCodeProcess(pi.hProcess, &exit_code);
+	wcout << L"done (code: " << exit_code << L")" << endl;
+
     
     // free OS resources
     ::CloseHandle(pi.hProcess);

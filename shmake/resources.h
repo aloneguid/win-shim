@@ -15,11 +15,15 @@ public:
 
 	std::wstring load_string(UINT id);
 
-	void copy_main_icon(const resources& source);
+	void set_main_icon(const std::wstring& path);
 
 	void replace_string_table(int index, const std::vector<std::wstring>& strings);
 
 	void extract_binary_to_file(int res_id, const std::wstring& path);
+
+	void replace_version_info(const resources& other);
+
+	void replace_icon(const resources& other);
 
 	void commit_changes();
 
@@ -30,5 +34,7 @@ private:
 	HANDLE hEdit;
 
 	void open_for_edit();
+	bool open_first_resource(LPCWSTR lpType, LPWSTR* lpName, WORD* wLanguage, DWORD* dataSize, LPVOID* data) const;
+	bool raw_copy(const resources& other, LPCWSTR lpType);
 };
 
