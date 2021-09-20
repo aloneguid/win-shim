@@ -7,9 +7,16 @@
 
 using namespace std;
 
-const wstring CMD_TOKEN = L"%s";
+const wstring CMD_TOKEN{ L"%s" };
 
-int wmain(int argc, wchar_t* argv[])
+// entry point has to be wWinMain (unicode version of WinMain) instead of "main" - this allows us to change
+// target subsystem to "windows" and turn off console allocation.
+// note that "shmake" is still standard console executable.
+int WINAPI wWinMain(
+    _In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR pCmdLine,
+    _In_ int nCmdShow)
 {
     resources res;
     auto cmd_pattern = res.load_string(IDS_TARGET_CMDLINE);
@@ -17,13 +24,14 @@ int wmain(int argc, wchar_t* argv[])
     wcout << "cmdline: " << cmd_pattern << endl;
 
     wstring cmd = cmd_pattern;
+    wstring arg(pCmdLine);
 
-    if (argc > 1)
+    if (!arg.empty())
     {
         size_t pos = cmd.find(CMD_TOKEN);
         if (pos != string::npos)
         {
-            cmd.replace(pos, CMD_TOKEN.size(), argv[1]);
+            cmd.replace(pos, CMD_TOKEN.size(), arg);
         }
     }
 

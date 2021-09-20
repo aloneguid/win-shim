@@ -13,9 +13,10 @@ Lightweight and customisable shim executable for **Windows** written in safe mod
   - [x] Original version information.
   - [x] Original file details.
   - [x] Original application icon.
-  - [ ] Application manifest.
-- Supports:
-  - [x] Any command line, parametrised.
+  - [ ] Application manifest (allowing to properly handle elevated UAC prompt).
+- Features:
+  - [x] Supports any command line, parametrised.
+  - [x] Windowless mode - no console windows are shown upon calling the shim at all.
 - Extras (on the roadmap)
   - [ ] Limit registry access.
   - [ ] Limit filesystem access.
@@ -41,7 +42,7 @@ In order to achieve this, run `shmake` like following:
 shmake.exe -c "wt -w 0 nt vim.exe %s" -o vimwt.exe -m "c:\scoop\apps\vim\3.2\vim.exe"
 ```
 
-which should generate a new executable `winwt.exe` that when called with an argument will open a tab in WT! `%s` is replaced by arguments passed to `wimwt.exe` when it executes. The last argument `-m` will also mirror vim application icon, version info and description so it looks just like vim everywhere.
+which should generate a new executable `winwt.exe` that when called with an argument will open a tab in WT! `%s` is replaced by arguments passed to `wimwt.exe` when it executes. The last argument `-m` will also mirror vim application icon, version info and description so it looks just like vim everywhere. Yes, the shim will have vim's icon and looks exactly like `vim.exe` in Windows explorer, even when you click "properties" on it.
 
 
 ## Building

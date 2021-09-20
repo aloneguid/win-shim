@@ -19,7 +19,7 @@ int main(int ac, char* av[])
 		//("target,t", po::value<string>(), "Path to target executable.")
 		("output,o", po::value<string>()->default_value(""), "Path to output executable.")
 		("cmd,c", po::value<string>()->default_value(""), "Command line to execute, use %s to capture the original. For instance 'vim.exe %s'. ")
-		("mirror,m", po::value<string>()->default_value(""), "Mirror data from another executable module (.exe or .dll). Mirrors version information, file description.")
+		("mirror,m", po::value<string>()->default_value(""), "Mirror data from another executable module (.exe or .dll). Mirrors version information, file description, and file icon.")
 		("help,h", "Produce help message.");
 
 	po::variables_map vm;
