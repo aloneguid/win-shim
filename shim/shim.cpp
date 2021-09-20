@@ -21,21 +21,15 @@ int WINAPI wWinMain(
     resources res;
     auto cmd_pattern = res.load_string(IDS_TARGET_CMDLINE);
 
-    wcout << "cmdline: " << cmd_pattern << endl;
-
     wstring cmd = cmd_pattern;
     wstring arg(pCmdLine);
 
-    if (!arg.empty())
+    // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
+    size_t pos = cmd.find(CMD_TOKEN);
+    if (pos != string::npos)
     {
-        size_t pos = cmd.find(CMD_TOKEN);
-        if (pos != string::npos)
-        {
-            cmd.replace(pos, CMD_TOKEN.size(), arg);
-        }
+        cmd.replace(pos, CMD_TOKEN.size(), arg);
     }
-
-    wcout << "final: " << cmd << endl;
 
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
@@ -58,7 +52,6 @@ int WINAPI wWinMain(
         &pi))
     {
         wstring emsg = get_win32_last_error();
-        wcout << L"failed: " << emsg;
         return 1;
     }
 
@@ -70,7 +63,6 @@ int WINAPI wWinMain(
     ::GetExitCodeProcess(pi.hProcess, &exit_code);
 	wcout << L"done (code: " << exit_code << L")" << endl;
 
-    
     // free OS resources
     ::CloseHandle(pi.hProcess);
     ::CloseHandle(pi.hThread);

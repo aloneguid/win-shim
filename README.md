@@ -1,7 +1,5 @@
 # win-shim
 
-> THIS IS AN EARLY ALPHA!
-
 Lightweight and customisable shim executable for **Windows** written in safe modern `C++ 20`.
 
 ## Features

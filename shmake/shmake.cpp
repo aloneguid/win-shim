@@ -61,7 +61,7 @@ int main(int ac, char* av[])
 				cout << "ok." << endl;
 			}
 
-			cout << "patching shim... " << endl;
+			cout << "patching shim... ";
 			resources shim_res(ofile);
 
 			if (!mirror.empty())
