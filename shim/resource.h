@@ -2,8 +2,9 @@
 // Microsoft Visual C++ generated include file.
 // Used by shim.rc
 //
-#define IDS_TARGET_CMDLINE              1
-#define IDI_ICON1                       101
+#define IDS_IMAGE_PATH                  1
+#define IDS_ARGS                        2
+#define IDS_CAPABILITIES                3
 #define IDI_main                        101
 #define IDS_STRING102                   102
 

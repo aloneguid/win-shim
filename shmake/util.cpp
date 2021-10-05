@@ -3,6 +3,18 @@
 #include "windows.h"
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
+#include <fstream>
+//#include "imagehlp.h"
+
+using namespace std;
+
+//#pragma comment(lib, "Imagehlp.lib")
+
+// https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#windows-subsystem
+// already in imagehlp.h
+//#define IMAGE_SUBSYSTEM_WINDOWS_GUI 0x2
+//#define IMAGE_SUBSYSTEM_WINDOWS_CUI 0x3
 
 std::wstring str_to_wstr(const std::string& str)
 {
@@ -81,4 +93,56 @@ void throw_win32_le(const std::wstring& action)
 
 	std::string utf8 = wstr_to_str(ss.str());
 	throw std::runtime_error(utf8);
+}
+
+bool is_console_exe(const std::wstring& image_path)
+{
+	// if image path is something like "notepad.exe" SHGetFileInfoW won't find it as it assumes
+	// relative paths are from current directory, therefore search for it
+	TCHAR buf[MAX_PATH];
+	::SearchPath(nullptr, image_path.c_str(), nullptr, MAX_PATH, buf, nullptr);
+
+	SHFILEINFOW sfi = { 0 };
+	DWORD_PTR ret = ::SHGetFileInfoW(buf, 0, &sfi, sizeof(sfi), SHGFI_EXETYPE);
+
+	return !HIWORD(ret);
+}
+
+std::wstring sys_path_search(const std::wstring& image_path)
+{
+	TCHAR buf[MAX_PATH];
+	::SearchPath(nullptr, image_path.c_str(), nullptr, MAX_PATH, buf, nullptr);
+	return wstring(buf);
+
+}
+
+void patch_exe_subsystem(const std::wstring& image_path, bool gui)
+{
+	//idea taken from: https://stackoverflow.com/questions/2435816/how-do-i-poke-the-flag-in-a-win32-pe-that-controls-console-window-display/14806704
+	// hacky way to flip subsystem flag to GUI/CUI
+
+	fstream bf(image_path, ios::in | ios::out | ios::binary);
+	if (bf)
+	{
+		bf.seekp(0x3c, ios_base::beg);
+		unsigned short header_offset{ 0 };
+		bf.read(reinterpret_cast<char*>(&header_offset), sizeof(unsigned short));
+
+		bf.seekp(header_offset, ios_base::beg);
+		unsigned int signature{ 0 };
+		bf.read(reinterpret_cast<char*>(&signature), sizeof(unsigned short));
+		if (signature == 0x4550)
+		{
+			bf.seekp(static_cast<size_t>(header_offset) + 0x5c);
+
+			unsigned short system =  gui ? IMAGE_SUBSYSTEM_WINDOWS_GUI : IMAGE_SUBSYSTEM_WINDOWS_CUI;
+			bf.write(reinterpret_cast<char*>(&system), sizeof(unsigned short));
+
+			//bf.read(reinterpret_cast<char*>(&header_offset), sizeof(unsigned short));
+			//cout << system << endl;
+			bf.flush();
+			bf.close();
+		}
+	}
+
 }

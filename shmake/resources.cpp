@@ -2,8 +2,11 @@
 #include <iostream>
 #include "util.h"
 #include <fstream>
+#include <boost/algorithm/string.hpp>
 
 #define MAX_LOADSTRING 1024
+
+#pragma comment(lib, "version.lib")
 
 using namespace std;
 
@@ -79,7 +82,56 @@ std::wstring resources::load_string(UINT id)
 {
 	WCHAR szs[MAX_LOADSTRING];
 	::LoadString(hInstance, id, szs, MAX_LOADSTRING);
-	return std::wstring(szs);
+	return wstring(szs);
+}
+
+std::wstring resources::get_file_version()
+{
+	// https://www.codeproject.com/Articles/8628/Retrieving-version-information-from-your-local-app
+
+	wstring result;
+
+	HRSRC hVersion = ::FindResource(hInstance, MAKEINTRESOURCE(VS_VERSION_INFO), RT_VERSION);
+	if (hVersion)
+	{
+		HGLOBAL hGlobal = ::LoadResource(hInstance, hVersion);
+		if (hGlobal)
+		{
+			LPVOID versionInfo = ::LockResource(hGlobal);
+			if (versionInfo)
+			{
+				LPVOID lpBuffer;
+				UINT puLen;
+				if (::VerQueryValue(versionInfo, L"\\VarFileInfo\\Translation", &lpBuffer, &puLen))
+				{
+					if (puLen == 4)
+					{
+						DWORD lang;
+						memcpy(&lang, lpBuffer, 4);
+						wchar_t sbuf[1024];
+						wsprintf(sbuf, L"\\StringFileInfo\\%02X%02X%02X%02X\\FileVersion",
+							(lang & 0xff00) >> 8, lang & 0xff, (lang & 0xff000000) >> 24,
+							(lang & 0xff0000) >> 16);
+						
+						if (::VerQueryValue(versionInfo, sbuf, &lpBuffer, &puLen))
+						{
+							result = reinterpret_cast<wchar_t*>(lpBuffer);
+						}
+					}
+				}
+			}
+
+			::FreeResource(hGlobal);
+		}
+	}
+
+	size_t last_dot_idx = result.find_last_of('.');
+	if (last_dot_idx != wstring::npos)
+	{
+		result.erase(last_dot_idx);
+	}
+
+	return result;
 }
 
 void resources::set_main_icon(const std::wstring& path)
@@ -181,10 +233,7 @@ bool resources::open_first_resource(LPCWSTR lpType, LPWSTR* lpName, WORD* wLangu
 					}
 				}
 			}
-			else
-			{
-				return true;
-			}
+			else return true;
 		}
 	}
 	return false;
@@ -195,8 +244,8 @@ bool resources::raw_copy(const resources& other, LPCWSTR lpType)
 	// get first RT_VERSION and first language
 	LPWSTR lpName, lpNameOther;
 	WORD wLanguage, wLanguageOther;
-	DWORD dataSize;
-	LPVOID data;
+	DWORD dataSize{ 0 };
+	LPVOID data { 0 };
 	if (other.open_first_resource(lpType, &lpNameOther, &wLanguageOther, &dataSize, &data) &&
 		open_first_resource(lpType, &lpName, &wLanguage, nullptr, nullptr))
 	{

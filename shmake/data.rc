@@ -76,10 +76,10 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", "Ivan G"
-            VALUE "FileDescription", "Shim maker"
+            VALUE "FileDescription", "Shim Maker"
             VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "shmake.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2021"
+            VALUE "LegalCopyright", "Copyright (C) 2021 by Ivan G"
             VALUE "OriginalFilename", "shmake.exe"
             VALUE "ProductName", "Shim maker"
             VALUE "ProductVersion", "1.1.0.0"

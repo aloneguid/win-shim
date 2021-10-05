@@ -15,6 +15,9 @@ public:
 
 	std::wstring load_string(UINT id);
 
+	// returns file version resource value, formatted for display
+	std::wstring get_file_version();
+
 	void set_main_icon(const std::wstring& path);
 
 	void replace_string_table(int index, const std::vector<std::wstring>& strings);

@@ -26,7 +26,9 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 STRINGTABLE
 BEGIN
-    IDS_TARGET_CMDLINE      "notepad.exe %s"
+    IDS_IMAGE_PATH          "C:\\Users\\alone\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe"
+    IDS_ARGS                "-w 0 nt vim.exe %s"
+    IDS_CAPABILITIES        "clipboard;no-kill"
 END
 
 #endif    // Neutral resources
