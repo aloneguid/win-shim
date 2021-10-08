@@ -1,5 +1,9 @@
 # win-shim
 
+<img src="media/icon.svg" style="width:80px; float: left;" />
+
+
+
 Lightweight and customisable shim executable for **Windows** written in safe modern `C++ 20`.
 
 ## Features
