@@ -96,7 +96,7 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[])
 			output = fs::absolute(output_path).wstring();
 
 			wcout << "      output: " << output << endl;
-			wcout << "      args: " << (args.empty() ? L"<none>" : args) << endl;
+			wcout << "        args: " << (args.empty() ? L"<none>" : args) << endl;
 			wcout << endl;
 
 			if (input == output)

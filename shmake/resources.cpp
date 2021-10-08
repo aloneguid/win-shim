@@ -214,27 +214,26 @@ bool resources::open_first_resource(LPCWSTR lpType, LPWSTR* lpName, WORD* wLangu
 	if (*lpName)
 	{
 		::EnumResourceLanguages(hInstance, lpType, *lpName, EnumResourceLanguagesFindFirst, (LONG_PTR)wLanguage);
-		if (*wLanguage)
+		// some resources don't have language lists at all, but at this point the resource still exists, so just use neutral lang
+		if (!*wLanguage) *wLanguage = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL);
+		if (data)
 		{
-			if (data)
+			HRSRC hResInfo = ::FindResourceEx(hInstance, lpType, *lpName, *wLanguage);
+			if (hResInfo)
 			{
-				HRSRC hResInfo = ::FindResourceEx(hInstance, lpType, *lpName, *wLanguage);
-				if (hResInfo)
+				*dataSize = ::SizeofResource(hInstance, hResInfo);
+				if (*dataSize)
 				{
-					*dataSize = ::SizeofResource(hInstance, hResInfo);
-					if (*dataSize)
+					HGLOBAL hResData = ::LoadResource(hInstance, hResInfo);
+					if (hResData)
 					{
-						HGLOBAL hResData = ::LoadResource(hInstance, hResInfo);
-						if (hResData)
-						{
-							*data = ::LockResource(hResData);
-							return true;
-						}
+						*data = ::LockResource(hResData);
+						return true;
 					}
 				}
 			}
-			else return true;
 		}
+		else return true;
 	}
 	return false;
 }
@@ -243,7 +242,7 @@ bool resources::raw_copy(const resources& other, LPCWSTR lpType)
 {
 	// get first RT_VERSION and first language
 	LPWSTR lpName, lpNameOther;
-	WORD wLanguage, wLanguageOther;
+	WORD wLanguage = 0, wLanguageOther = 0;
 	DWORD dataSize{ 0 };
 	LPVOID data { 0 };
 	if (other.open_first_resource(lpType, &lpNameOther, &wLanguageOther, &dataSize, &data) &&
