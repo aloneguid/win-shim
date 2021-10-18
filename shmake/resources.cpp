@@ -32,13 +32,6 @@ typedef struct {
 	WORD             Children;
 } VS_VERSIONINFO;
 
-BOOL EnumResourceNamesFuncFindFirst(HMODULE hModule, LPCWSTR lpType, LPWSTR lpName, LONG_PTR lParam)
-{
-	LPWSTR* ret = (LPWSTR*)lParam;
-	*ret = lpName;
-	return FALSE;
-}
-
 BOOL EnumResourceLanguagesFindFirst(HMODULE hModule, LPCWSTR lpType, LPCWSTR lpName, WORD wLanguage, LONG_PTR lParam)
 {
 	WORD* ret = (WORD*)lParam;
@@ -191,6 +184,8 @@ void resources::replace_version_info(const resources& other)
 
 void resources::replace_icon(const resources& other)
 {
+	// todo: copy all icons - need to enumerate EnumResourceNames lpNames, not just the first resource
+
 	raw_copy(other, RT_ICON);
 }
 
@@ -208,54 +203,86 @@ void resources::open_for_edit()
 	}
 }
 
-bool resources::open_first_resource(LPCWSTR lpType, LPWSTR* lpName, WORD* wLanguage, DWORD* dataSize, LPVOID* data) const
+BOOL enum_resource_names_func(HMODULE hModule, LPCWSTR lpType, LPWSTR lpName, LONG_PTR lParam)
 {
-	::EnumResourceNames(hInstance, lpType, EnumResourceNamesFuncFindFirst, (LONG_PTR)lpName);
-	if (*lpName)
+#if _DEBUG
+	// see https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nc-libloaderapi-enumresnameproca#remarks
+	if (IS_INTRESOURCE(lpName))
 	{
-		::EnumResourceLanguages(hInstance, lpType, *lpName, EnumResourceLanguagesFindFirst, (LONG_PTR)wLanguage);
-		// some resources don't have language lists at all, but at this point the resource still exists, so just use neutral lang
-		if (!*wLanguage) *wLanguage = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL);
-		if (data)
+		cout << (int)lpName;
+	}
+	else
+	{
+		wcout << lpName;
+	}
+#endif
+
+	vector<LPWSTR>* vct = (vector<LPWSTR>*)lParam;
+	vct->push_back(lpName);
+	return TRUE;
+}
+
+vector<LPWSTR> resources::enum_resource_names(LPCWSTR lpType) const
+{
+	vector<LPWSTR> ret;
+	::EnumResourceNames(hInstance, lpType, enum_resource_names_func, (LONG_PTR)&ret);
+	return ret;
+}
+
+bool resources::open_resource(LPCWSTR lpType, LPWSTR lpName, WORD* wLanguage, DWORD* dataSize, LPVOID* data) const
+{
+	// we'll use default language
+	::EnumResourceLanguages(hInstance, lpType, lpName, EnumResourceLanguagesFindFirst, (LONG_PTR)wLanguage);
+
+	// some resources don't have language lists at all, but at this point the resource still exists, so just use neutral lang
+	if (!*wLanguage) *wLanguage = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL);
+
+	if (data)
+	{
+		HRSRC hResInfo = ::FindResourceEx(hInstance, lpType, lpName, *wLanguage);
+		if (hResInfo)
 		{
-			HRSRC hResInfo = ::FindResourceEx(hInstance, lpType, *lpName, *wLanguage);
-			if (hResInfo)
+			*dataSize = ::SizeofResource(hInstance, hResInfo);
+			if (*dataSize)
 			{
-				*dataSize = ::SizeofResource(hInstance, hResInfo);
-				if (*dataSize)
+				HGLOBAL hResData = ::LoadResource(hInstance, hResInfo);
+				if (hResData)
 				{
-					HGLOBAL hResData = ::LoadResource(hInstance, hResInfo);
-					if (hResData)
-					{
-						*data = ::LockResource(hResData);
-						return true;
-					}
+					*data = ::LockResource(hResData);
+					return true;
 				}
 			}
 		}
-		else return true;
 	}
+	else return true;
+
 	return false;
 }
 
 bool resources::raw_copy(const resources& other, LPCWSTR lpType)
 {
-	// get first RT_VERSION and first language
-	LPWSTR lpName, lpNameOther;
-	WORD wLanguage = 0, wLanguageOther = 0;
-	DWORD dataSize{ 0 };
-	LPVOID data { 0 };
-	if (other.open_first_resource(lpType, &lpNameOther, &wLanguageOther, &dataSize, &data) &&
-		open_first_resource(lpType, &lpName, &wLanguage, nullptr, nullptr))
+	// enumerate other's resources of the specific resource type
+	auto all_names = other.enum_resource_names(lpType);
+	for (LPWSTR lpName : all_names)
 	{
-		open_for_edit();
+		WORD wLan{ 0 }, wLanThis {0};
+		DWORD dataSize{ 0 };
+		LPVOID data{ 0 };
 
-		if (!::UpdateResource(hEdit, lpType, lpName, wLanguage, data, dataSize))
+		if (other.open_resource(lpType, lpName, &wLan, &dataSize, &data))
 		{
-			throw_win32_le();
-		}
+			open_for_edit();
 
-		return true;
+			//try to open resource in this module, in case it exists for any language, to avoid duplications
+			open_resource(lpType, lpName, &wLanThis, nullptr, nullptr);
+			if (!wLanThis) wLanThis = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL);
+
+			if (!::UpdateResource(hEdit, lpType, lpName, wLanThis, data, dataSize))
+			{
+				throw_win32_le();
+			}
+		}
 	}
-	return false;
+
+	return true;
 }

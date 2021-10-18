@@ -37,7 +37,8 @@ private:
 	HANDLE hEdit;
 
 	void open_for_edit();
-	bool open_first_resource(LPCWSTR lpType, LPWSTR* lpName, WORD* wLanguage, DWORD* dataSize, LPVOID* data) const;
+	std::vector<LPWSTR> enum_resource_names(LPCWSTR lpType) const;
+	bool open_resource(LPCWSTR lpType, LPWSTR lpName, WORD* wLanguage, DWORD* dataSize, LPVOID* data) const;
 	bool raw_copy(const resources& other, LPCWSTR lpType);
 };
 
