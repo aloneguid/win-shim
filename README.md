@@ -49,7 +49,7 @@ Yes, the shim will have vim's icon and looks exactly like `vim.exe` in Windows e
 
 ## Building
 
-As this is **Windows Exclusive**, you need Visual Studio 2019+ with Windows SDK installed. Normally I would use CMake, but it is considerably harder (not impossible) when you need access to OS specific tools, especially native resources (which I utilise heavily to do the magic). It is also very well integrated with `vcpkg`.
+As this is **Windows Exclusive**, you need Visual Studio 2022+ with Windows SDK installed. Normally I would use CMake, but it is considerably harder (not impossible) when you need access to OS specific tools, especially native resources (which I utilise heavily to do the magic). It is also very well integrated with `vcpkg`.
 
 `shmake` (but not shim) has dependency on:
 - `boost::program_options` to present you with a nice command line.
