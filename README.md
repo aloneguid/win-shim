@@ -57,7 +57,7 @@ As this is **Windows Exclusive**, you need Visual Studio 2019+ with Windows SDK 
 All the dependencies are installed via [vcpkg](https://github.com/microsoft/vcpkg).
 
 ```
-vcpkg install boost-program-options:x64-windows boost-program-options:x64-windows-static
+vcpkg install boost-program-options:x64-windows boost-program-options:x64-windows-static boost-algorithm:x64-windows boost-algorithm:x64-windows-static
 ```
 
 `shim` **does not have any dependencies** and is kept as small and light as possible.
