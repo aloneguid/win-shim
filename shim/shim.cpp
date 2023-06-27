@@ -55,8 +55,8 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
     wstring passed_arg;
     for (int i = 1; i < argc; i++)
     {
-        passed_arg += argv[i];
         if (i > 1) passed_arg += L" ";
+        passed_arg += argv[i];
     }
 
     // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
