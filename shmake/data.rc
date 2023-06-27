@@ -59,8 +59,8 @@ IDR_SHIM_EXE            RCDATA                  "shim.bin"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,2,0
- PRODUCTVERSION 1,1,2,0
+ FILEVERSION 1,1,3,0
+ PRODUCTVERSION 1,1,3,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -77,12 +77,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Ivan G"
             VALUE "FileDescription", "Shim Maker"
-            VALUE "FileVersion", "1.1.2.0"
+            VALUE "FileVersion", "1.1.3.0"
             VALUE "InternalName", "shmake.exe"
             VALUE "LegalCopyright", "Copyright (C) 2021 by Ivan G"
             VALUE "OriginalFilename", "shmake.exe"
             VALUE "ProductName", "Shim maker"
-            VALUE "ProductVersion", "1.1.2.0"
+            VALUE "ProductVersion", "1.1.3.0"
         END
     END
     BLOCK "VarFileInfo"
