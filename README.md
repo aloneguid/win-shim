@@ -49,15 +49,17 @@ Yes, the shim will have vim's icon and looks exactly like `vim.exe` in Windows e
 
 ## Building
 
-As this is **Windows Exclusive**, you need Visual Studio 2019+ with Windows SDK installed. Normally I would use CMake, but it is considerably harder (not impossible) when you need access to OS specific tools, especially native resources (which I utilise heavily to do the magic). It is also very well integrated with `vcpkg`.
+As this is **Windows Exclusive**, you need Visual Studio 2022+ with Windows SDK installed. Normally I would use CMake, but it is considerably harder (not impossible) when you need access to OS specific tools, especially native resources (which I utilise heavily to do the magic). It is also very well integrated with `vcpkg`.
 
 `shmake` (but not shim) has dependency on:
 - `boost::program_options` to present you with a nice command line.
+- `boost::algorithm` to have access to some string manipulation algorithms.
 
-All the dependencies are installed via [vcpkg](https://github.com/microsoft/vcpkg).
+All the dependencies are installed via [vcpkg](https://github.com/microsoft/vcpkg).  
+Also note that `Debug` builds used shared dependencies while `Release` builds use the static ones to produce a single portable `shmake.exe`.
 
 ```
-vcpkg install boost-program-options:x64-windows boost-program-options:x64-windows-static
+vcpkg install boost-program-options:x64-windows boost-program-options:x64-windows-static boost-algorithm:x64-windows boost-algorithm:x64-windows-static
 ```
 
 `shim` **does not have any dependencies** and is kept as small and light as possible.

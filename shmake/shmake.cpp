@@ -36,7 +36,8 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[])
 			"Command line to execute. By default arguments are passed through as is, but you can pass any string and use %s as substitute for the original arguments.")
 		("app-path", po::wvalue<wstring>(&app_path)->default_value(L"", ""),
 			"App path to use instead of 'input' when launching the shim. This is useful when you need to launch a different program, but still copy version and icon information from the 'input'.")
-		("capabilities,c", po::wvalue<vector<wstring>>(&caps)->multitoken(), "Capabilities i.e. what target app is allowed to do. By default clipboard access is allowed. Supported options: clipboard - allow clipboard access, no-kill - do not kill target process when shim exits. You can pass multiple capabilities i.e. -c clipboard no-kill");
+		("capabilities,c", po::wvalue<vector<wstring>>(&caps)->multitoken(), "Capabilities i.e. what target app is allowed to do. By default clipboard access is allowed. Supported options: clipboard - allow clipboard access, no-kill - do not kill target process when shim exits. You can pass multiple capabilities i.e. -c clipboard no-kill")
+		("keep-relative", po::bool_switch()->default_value(false), "Switch that ask to not transform input and app-path to absolute path, but keep them relative. Pay attention that if you specify a output path, input should probably not be relative, but app-path still can be, especially if it’s an app in the PATH.");
 
 	try
 	{
@@ -56,10 +57,14 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[])
 		{
 			wcout << "virtualizing '" << input << "'" << endl;
 
+			bool keep_relative = vm["keep-relative"].as<bool>();
+
 			// make input absolute path
-			input = sys_path_search(input);
+			if (!keep_relative)
+			{
+				input = sys_path_search(input);
+			}
 			fs::path input_path(input);
-			input = fs::absolute(input_path).wstring();
 
 			wstring caps_str;
 			if (!caps.empty())
@@ -75,10 +80,13 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[])
 			wcout << "       input: " << input << endl;
 			wcout << "capabilities: " << (caps_str.empty() ? L"none" : caps_str) << endl;
 
-			// make app path absolute
 			if (!app_path.empty())
 			{
-				app_path = sys_path_search(app_path);
+				// make app path absolute
+				if (!keep_relative)
+				{
+					app_path = sys_path_search(app_path);
+				}
 				wcout << "         app: " << app_path << endl;
 			}
 
