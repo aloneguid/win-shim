@@ -50,8 +50,6 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
     get_caps(caps_str, cap_clipboard, cap_no_kill);
 
     // args
-    auto args = args_pattern;
-
     wstring passed_arg;
     for (int i = 1; i < argc; i++)
     {
@@ -59,11 +57,19 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
         passed_arg += argv[i];
     }
 
-    // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
-    size_t pos = args.find(CMD_TOKEN);
-    if (pos != string::npos)
+    auto args = args_pattern;
+    if (args.empty())
     {
-        args.replace(pos, CMD_TOKEN.size(), passed_arg);
+        args = passed_arg;
+    }
+    else
+    {
+        // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
+        size_t pos = args.find(CMD_TOKEN);
+        if (pos != string::npos)
+        {
+            args.replace(pos, CMD_TOKEN.size(), passed_arg);
+        }
     }
 
     wstring full_cmd = image_path;
