@@ -2,6 +2,7 @@
 #include <string>
 #include "windows.h"
 #include "resource.h"
+#include <boost/algorithm/string/replace.hpp>
 #include "../shmake/resources.h"
 #include "../shmake/util.h"
 
@@ -54,7 +55,17 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
     for (int i = 1; i < argc; i++)
     {
         if (i > 1) passed_arg += L" ";
-        passed_arg += argv[i];
+        wstring arg = argv[i];
+
+        // if an arg contains a space, encapsulate it into double quotes
+        // after having escape the double quotes it contains.
+        if (arg.find(' ') != string::npos)
+        {
+            boost::replace_all(arg, L"\"", L"\\\"");
+            arg.insert(0, L"\"");
+            arg.append(L"\"");
+        }
+        passed_arg += arg;
     }
 
     auto args = args_pattern;
