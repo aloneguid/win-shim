@@ -52,11 +52,16 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
     // args
     auto args = args_pattern;
 
-    wstring passed_arg;
-    for (int i = 1; i < argc; i++)
+    // use the original command-line string from GetCommandLine() for token replacement
+    // the string always starts with a path to the shim executable, so we need to remove it first
+    wstring passed_arg = ::GetCommandLine();
+    if (passed_arg[0] == L'"')
     {
-        if (i > 1) passed_arg += L" ";
-        passed_arg += argv[i];
+        passed_arg.erase(0, wcslen(argv[0]) + 2);
+    }
+    else
+    {
+        passed_arg.erase(0, wcslen(argv[0]));
     }
 
     // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
