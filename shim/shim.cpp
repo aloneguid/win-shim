@@ -71,7 +71,16 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
         args.replace(pos, CMD_TOKEN.size(), passed_arg);
     }
 
-    wstring full_cmd = image_path;
+    // if the path to the target executable contains spaces, enclose it in double quotes
+    wstring full_cmd;
+    if (image_path.find(L" ") != wstring::npos && image_path[0] != L'"')
+    {
+        full_cmd = L'"' + image_path + L'"';
+    }
+    else
+    {
+        full_cmd = image_path;
+    }
     if (!args.empty())
     {
         full_cmd += L" " + args;
