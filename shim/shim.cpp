@@ -59,11 +59,18 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
         passed_arg += argv[i];
     }
 
-    // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
-    size_t pos = args.find(CMD_TOKEN);
-    if (pos != string::npos)
+    if (!args.empty())
     {
-        args.replace(pos, CMD_TOKEN.size(), passed_arg);
+        // do token replacement regardless of whether we have an argument or not - if we do, it needs to be deleted anyway
+        size_t pos = args.find(CMD_TOKEN);
+        if (pos != string::npos)
+        {
+            args.replace(pos, CMD_TOKEN.size(), passed_arg);
+        }
+    }
+    else
+    {
+        args = passed_arg;
     }
 
     wstring full_cmd = image_path;
