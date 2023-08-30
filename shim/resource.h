@@ -5,7 +5,6 @@
 #define IDS_IMAGE_PATH                  1
 #define IDS_ARGS                        2
 #define IDS_CAPABILITIES                3
-#define IDI_main                        101
 #define IDS_STRING102                   102
 
 // Next default values for new objects
