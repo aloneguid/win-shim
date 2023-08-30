@@ -187,6 +187,7 @@ void resources::replace_icon(const resources& other)
 	// todo: copy all icons - need to enumerate EnumResourceNames lpNames, not just the first resource
 
 	raw_copy(other, RT_ICON);
+	raw_copy(other, RT_GROUP_ICON);
 }
 
 void resources::open_for_edit()
