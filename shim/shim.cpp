@@ -105,12 +105,12 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
         ::AssignProcessToJobObject(hJob, pi.hProcess);
 
         JOBOBJECT_BASIC_UI_RESTRICTIONS jUI = { 0 };
-        jUI.UIRestrictionsClass = JOB_OBJECT_UILIMIT_DESKTOP |
-            JOB_OBJECT_UILIMIT_DISPLAYSETTINGS |
-            JOB_OBJECT_UILIMIT_EXITWINDOWS |
-            JOB_OBJECT_UILIMIT_GLOBALATOMS |
-            JOB_OBJECT_UILIMIT_HANDLES |
-            JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS;
+        //jUI.UIRestrictionsClass = JOB_OBJECT_UILIMIT_DESKTOP; |
+        //    JOB_OBJECT_UILIMIT_DISPLAYSETTINGS |
+        //    JOB_OBJECT_UILIMIT_EXITWINDOWS |
+        //    JOB_OBJECT_UILIMIT_GLOBALATOMS |
+        //    JOB_OBJECT_UILIMIT_HANDLES |
+        //    JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS;
         if (!cap_clipboard)
         {
             jUI.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_READCLIPBOARD | JOB_OBJECT_UILIMIT_WRITECLIPBOARD;
@@ -133,7 +133,7 @@ int wmain(int argc, wchar_t* argv[], wchar_t *envp[])
             }
         }
 
-        JOBOBJECT_CPU_RATE_CONTROL_INFORMATION jCpu = { 0 };
+        //JOBOBJECT_CPU_RATE_CONTROL_INFORMATION jCpu = { 0 };
 
         // now the process starts for real
         //wcout << L"resuming" << endl;
